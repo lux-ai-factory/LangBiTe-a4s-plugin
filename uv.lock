@@ -5,13 +5,10 @@ requires-python = ">=3.12"
 [[package]]
 name = "a4s-plugin-interface"
 version = "0.1.0"
-source = { editable = "../../a4s-plugin-interface" }
+source = { git = "https://github.com/lux-ai-factory/a4s-plugin-interface.git#88f9375453624fccda30eba86fd502b3a7119ad6" }
 dependencies = [
     { name = "pydantic" },
 ]
-
-[package.metadata]
-requires-dist = [{ name = "pydantic", specifier = ">=2.12.5" }]
 
 [[package]]
 name = "annotated-types"
@@ -302,7 +299,7 @@ dependencies = [
 
 [package.metadata]
 requires-dist = [
-    { name = "a4s-plugin-interface", editable = "../../a4s-plugin-interface" },
+    { name = "a4s-plugin-interface", git = "https://github.com/lux-ai-factory/a4s-plugin-interface.git" },
     { name = "gpt4all", specifier = ">=2.8.2" },
     { name = "jsonschema", specifier = ">=4.25.1" },
     { name = "mypy", specifier = ">=1.11" },

@@ -11,7 +11,7 @@ from langbite.a4s_plugin.ui_schema import ui_schema
 from langbite.langbite import LangBiTeForAPI
 
 
-class LangBiteBaseEvaluationPlugin(BaseEvaluationPlugin[ConfigFormSchema]):
+class LangBiteEvaluationPlugin(BaseEvaluationPlugin[ConfigFormSchema]):
     form_ui_schema = ui_schema
 
 

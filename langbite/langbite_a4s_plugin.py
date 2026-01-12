@@ -8,7 +8,6 @@ from a4s_plugin_interface.models.measure import Measure
 from langbite.a4s_plugin.custom_dataset_input_provider import CustomDatasetInputProvider
 from langbite.a4s_plugin.models import ConfigFormSchema, LanguageEnum
 from langbite.a4s_plugin.ui_schema import ui_schema
-from langbite.langbite import LangBiTeForAPI
 
 
 class LangBiteEvaluationPlugin(BaseEvaluationPlugin[ConfigFormSchema]):
@@ -16,7 +15,8 @@ class LangBiteEvaluationPlugin(BaseEvaluationPlugin[ConfigFormSchema]):
 
 
     def set_dataset_input_provider(self, file_content: bytes | None) -> BaseInputProvider:
-        return CustomDatasetInputProvider(file_content)
+        self.dataset_input_provider = CustomDatasetInputProvider(file_content)
+        return self.dataset_input_provider
 
 
     def form_schema_to_internal(self, config_form_data: ConfigFormSchema) -> dict:
@@ -24,11 +24,13 @@ class LangBiteEvaluationPlugin(BaseEvaluationPlugin[ConfigFormSchema]):
         config_data["aiModels"] = [config_data["aiModels"]]
         for requirement in config_data["requirements"]:
             communities = {}
+            languages = []
             for community in requirement["communities"]:
                 communities[community["language"]] = community["entries"]
                 language = LanguageEnum(community["language"])
-                requirement["languages"].append(language)
+                languages.append(language)
 
+            requirement["languages"] = languages
             requirement["communities"] = communities
 
         config_data["timestamp"] = int(time.time())
@@ -36,6 +38,8 @@ class LangBiteEvaluationPlugin(BaseEvaluationPlugin[ConfigFormSchema]):
 
 
     def evaluate(self, config_data) ->  dict[str, DataFrame | None]:
+        from langbite.langbite import LangBiTeForAPI
+
         config: ConfigFormSchema = self.validate_config_form_data(config_data)
 
         langbite_config = self.form_schema_to_internal(config)
@@ -59,6 +63,6 @@ class LangBiteEvaluationPlugin(BaseEvaluationPlugin[ConfigFormSchema]):
 
     @metric("LangBite Passed Percent")
     def export_accuracy(self, langbite_report: dict[str, DataFrame | None]) -> list[Measure]:
-        passed_percent = langbite_report["global_eval"][0]["Passed Pct"]
+        passed_percent = langbite_report['global_eval']['Passed Pct'].values.take(0)
         measure = Measure(name="LangBite Passed Percent", score=passed_percent)
         return [measure]
